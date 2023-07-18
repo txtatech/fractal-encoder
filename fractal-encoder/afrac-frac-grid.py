@@ -1,54 +1,31 @@
-import qrcode
 import json
 import os
-
-def generate_qr_with_info(coordinates, neighbors):
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_M,
-        box_size=10,
-        border=4,
-    )
-
-    # Add header with coordinates
-    header = f"Coordinates: {coordinates}"
-    qr.add_data(header)
-    qr.make(fit=True)
-    qr_img = qr.make_image(fill_color="black", back_color="white")
-
-    # Add footer with neighbors
-    footer = f"Neighbors: {', '.join(neighbors)}"
-    qr.add_data(footer)
-
-    # Save QR code as ASCII text
-    ascii_qr = qr.get_matrix()
-    text_filename = f"qr_{coordinates}.txt"
-    text_filepath = os.path.join('outputs/grid', text_filename)
-    with open(text_filepath, "w") as file:
-        for row in ascii_qr:
-            file.write("".join(["##" if module else "  " for module in row]) + "\n")
-
-    return qr_img, text_filepath
+from PIL import Image
+import base64
 
 def generate_grid(size):
     grid = []
     qr_info = []
-    qr_codes_directory = "outputs/qrs"
+    qr_codes_directory = "outputs/fractals"  # Directory containing the fractal PNGs
     qr_code_filenames = [filename for filename in os.listdir(qr_codes_directory) if filename.endswith(".png")]
 
     for i, filename in enumerate(qr_code_filenames):
         coordinates = f"({i % size}, {i // size})"
         neighbors = get_neighbors(i % size, i // size, size)
-        qr_img, text_filepath = generate_qr_with_info(coordinates, neighbors)
-        grid.append(qr_img)
+        image_filepath = os.path.join(qr_codes_directory, filename)
+        image = Image.open(image_filepath)
+
+        # Resize the image to the desired size
+        image = image.resize((128, 128))
+
         qr_info.append({
-            "text_filename": os.path.basename(text_filepath),
             "coordinates": coordinates,
             "neighbors": neighbors,
-            "image_filename": os.path.join(qr_codes_directory, filename)
+            "image": image,
+            "image_filename": filename
         })
 
-    return grid, qr_info
+    return qr_info
 
 def get_neighbors(i, j, size):
     neighbors = []
@@ -62,19 +39,25 @@ def get_neighbors(i, j, size):
         neighbors.append(f"({i}, {j+1})")  # East
     return neighbors
 
-def save_grid_images(grid, size, qr_info):
+def save_grid_images(qr_info, size):
     os.makedirs('outputs/grid', exist_ok=True)
 
-    for i, qr_img in enumerate(grid):
-        qr_filename = f"qr_{i}.png"
-        qr_img.save(os.path.join('outputs/grid', qr_filename))
-        qr_info[i]['image_filename'] = qr_filename
+    for i, info in enumerate(qr_info):
+        image = info['image']
+        grid_filename = f"grid_{i}.png"
+        grid_filepath = os.path.join('outputs/grid', grid_filename)
+        image.save(grid_filepath)
 
-        text_filename = qr_info[i]['text_filename']
-        text_filepath = os.path.join('outputs/grid', text_filename)
-        os.replace(text_filepath, os.path.join('outputs/grid', text_filename))
+        qr_info[i]['image_filename'] = grid_filename
 
 def save_qr_info(qr_info):
+    for info in qr_info:
+        image = info['image']
+        # Convert the image to a base64-encoded string
+        image_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+        # Update the 'image' key with the base64 string
+        info['image'] = image_base64
+
     with open(os.path.join('outputs/grid', "qr_info.json"), "w") as file:
         json.dump(qr_info, file, indent=4)
 
@@ -106,16 +89,13 @@ def generate_x3dom_page(qr_info, grid_size, output_file="index.html"):
                 <viewpoint position='0 5 10'></viewpoint>
         """)
 
-        # Calculate the center position of the grid
-        grid_center = grid_size / 2.0
-
         for i, info in enumerate(qr_info):
             x = i % grid_size
             y = i // grid_size
 
-            # Calculate the translation position relative to the center
-            x_translation = (x - grid_center) * 2
-            z_translation = (y - grid_center) * 2
+            # Calculate the translation position
+            x_translation = x - (grid_size // 2)
+            z_translation = y - (grid_size // 2)
 
             file.write(f"""
             <transform translation='{x_translation} 0 {z_translation}'>
@@ -130,8 +110,9 @@ def generate_x3dom_page(qr_info, grid_size, output_file="index.html"):
             """)
 
         file.write("""
-        </scene>
-    </x3d>
+            </scene>
+        </x3d>
+    </div>
 </body>
 </html>
         """)
@@ -139,8 +120,8 @@ def generate_x3dom_page(qr_info, grid_size, output_file="index.html"):
 
 if __name__ == "__main__":
     grid_size = 4
-    grid, qr_info = generate_grid(grid_size)
+    qr_info = generate_grid(grid_size)
 
-    save_grid_images(grid, grid_size, qr_info)
+    save_grid_images(qr_info, grid_size)
     save_qr_info(qr_info)
     generate_x3dom_page(qr_info, grid_size)

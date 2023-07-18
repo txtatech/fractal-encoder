@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Overlay WebPage</title>
+  <style>
+    .film-overlay {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .overlay-text {
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 1vw;
+      flex-grow: 1;
+      white-space: pre-wrap;
+      overflow: hidden;
+      word-break: break-all;
+    }
+    .overlay-resizer {
+      width: 10px;
+      height: 10px;
+      background: red;
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: se-resize;
+    }
+    .detach-button {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      padding: 2px 5px;
+      background-color: white;
+      color: black;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="toggle-button" style="position: fixed; top: 10px; right: 10px; z-index: 9999;">Overlay</button>
+
+  <script>
+    const toggleButton = document.querySelector('#toggle-button');
+    let pinnedOverlays = [];
+
+    toggleButton.addEventListener('click', async function () {
+      try {
+        const copiedCode = await navigator.clipboard.readText();
+
+        // Create overlay for each click
+        const filmOverlay = createOverlay();
+        const text = filmOverlay.querySelector('.overlay-text');
+        const resizer = filmOverlay.querySelector('.overlay-resizer');
+        const detachButton = filmOverlay.querySelector('.detach-button');
+
+        // Add text
+        text.textContent = copiedCode;
+
+        // Add listeners to the overlay
+        addOverlayListeners(filmOverlay, text, resizer);
+
+        // Append to parent container
+        document.body.appendChild(filmOverlay);
+
+        detachButton.addEventListener('click', function () {
+          detachOverlay(filmOverlay);
+        });
+      } catch (error) {
+        console.log('Failed to read clipboard:', error);
+      }
+    });
+
+    function createOverlay() {
+      // Create overlay element
+      const filmOverlay = document.createElement('div');
+      filmOverlay.classList.add('film-overlay');
+
+      // Create text element
+      const text = document.createElement('pre');
+      text.classList.add('overlay-text');
+
+      // Create resizer element
+      const resizer = document.createElement('div');
+      resizer.classList.add('overlay-resizer');
+
+      // Create detach button
+      const detachButton = document.createElement('button');
+      detachButton.textContent = 'Pin';
+      detachButton.classList.add('detach-button');
+
+      // Append elements
+      filmOverlay.appendChild(text);
+      filmOverlay.appendChild(resizer);
+      filmOverlay.appendChild(detachButton);
+
+      return filmOverlay;
+    }
+
+    function addOverlayListeners(filmOverlay, text, resizer) {
+      // Variables for storing the current position and the mouse offset
+      let drag = false;
+      let currentX;
+      let currentY;
+      let offsetX;
+      let offsetY;
+      let isResizing = false;
+      let scale = 1;
+
+      // mousedown event for dragging
+      filmOverlay.addEventListener('mousedown', function (e) {
+        if (e.shiftKey) {
+          offsetX = e.clientX - parseInt(window.getComputedStyle(this).left);
+          offsetY = e.clientY - parseInt(window.getComputedStyle(this).top);
+          drag = true;
+        }
+      });
+
+      // mousedown event for resizing
+      resizer.addEventListener('mousedown', function (e) {
+        isResizing = true;
+      });
+
+      // mousemove event for dragging and resizing
+      window.addEventListener('mousemove', function (e) {
+        e.preventDefault();
+        if (drag) {
+          currentX = e.clientX - offsetX;
+          currentY = e.clientY - offsetY;
+          filmOverlay.style.left = currentX + 'px';
+          filmOverlay.style.top = currentY + 'px';
+        } else if (isResizing) {
+          let newWidth = e.pageX - filmOverlay.offsetLeft;
+          let newHeight = e.pageY - filmOverlay.offsetTop;
+          filmOverlay.style.width = newWidth + 'px';
+          filmOverlay.style.height = newHeight + 'px';
+          text.style.transform = `scale(${scale})`;
+          adjustTextSize(filmOverlay, text);
+        }
+      });
+
+      // mouseup event for dragging and resizing
+      window.addEventListener('mouseup', function () {
+        drag = false;
+        isResizing = false;
+      });
+
+      // mousewheel event for zooming
+      filmOverlay.addEventListener('mousewheel', function (e) {
+        e.preventDefault();
+        const zoomSpeed = 0.1;
+        scale += e.deltaY > 0 ? -zoomSpeed : zoomSpeed;
+        scale = Math.max(scale, 0.1); // Minimum scale
+        filmOverlay.style.transform = `scale(${scale})`;
+        adjustTextSize(filmOverlay, text);
+      });
+
+      // Adjust text size initially and whenever the window is resized
+      adjustTextSize(filmOverlay, text);
+      window.addEventListener('resize', () => adjustTextSize(filmOverlay, text));
+    }
+
+    function adjustTextSize(filmOverlay, text) {
+      const containerWidth = filmOverlay.offsetWidth;
+      const containerHeight = filmOverlay.offsetHeight;
+      const textWidth = text.offsetWidth;
+      const textHeight = text.offsetHeight;
+      const scaleX = containerWidth / textWidth;
+      const scaleY = containerHeight / textHeight;
+      const finalScale = Math.min(scaleX, scaleY);
+      text.style.transform = `scale(${finalScale})`;
+    }
+
+    function detachOverlay(filmOverlay) {
+      // Remove event listeners
+      filmOverlay.removeEventListener('mousedown');
+      filmOverlay.removeEventListener('mouseup');
+      window.removeEventListener('mousemove');
+      filmOverlay.removeEventListener('mousewheel');
+      window.removeEventListener('resize');
+
+      // Remove detach button
+      const detachButton = filmOverlay.querySelector('.detach-button');
+      detachButton.parentNode.removeChild(detachButton);
+
+      // Add overlay to pinnedOverlays array
+      pinnedOverlays.push(filmOverlay);
+    }
+  </script>
+</body>
+</html>
+

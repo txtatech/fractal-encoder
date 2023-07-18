@@ -1,0 +1,77 @@
+////////////////////////EXAMPLE SETTING 0//////////////////////////////////
+
+
+def main():
+    # Read the text from a file
+    file_path = "fractest.txt"  # Replace with the path to your input file
+    with open(file_path, "r") as file:
+        text = file.read()
+
+    # Specify the chunk size and number of characters per fractal
+    chunk_size = 13200
+    num_chars = 2300
+
+    # Calculate the number of iterations required
+    num_iterations = math.ceil(len(text) / chunk_size)
+
+    # Generate a unique identifier for the fractals
+    fractal_identifier = str(uuid.uuid4())
+
+    # Set up the dimensions of the fractal images
+    width = 1845
+    height = 1845
+
+////////////////////////EXAMPLE SETTING 1//////////////////////////////////
+
+    # Specify the chunk size and number of characters per fractal
+    chunk_size = 11000
+    num_chars = 11000
+
+    # Calculate the number of iterations required
+    num_iterations = math.ceil(len(text) / chunk_size)
+
+    # Generate a unique identifier for the fractals
+    fractal_identifier = str(uuid.uuid4())
+
+    # Set up the dimensions of the fractal images
+    width = 2000
+    height = 2000
+
+
+////////////////////////EXAMPLE SETTING 2//////////////////////////////////
+
+def main():
+    # Read the text from a file
+    file_path = "fractest.txt"  # Replace with the path to your input file
+    with open(file_path, "r") as file:
+        text = file.read()
+
+    # Specify the chunk size and number of characters per fractal
+    chunk_size = 111000
+    num_chars = 11000
+
+    # Calculate the number of iterations required
+    num_iterations = math.ceil(len(text) / chunk_size)
+
+    # Generate a unique identifier for the fractals
+    fractal_identifier = str(uuid.uuid4())
+
+    # Set up the dimensions of the fractal images
+    width = 2000
+    height = 2000
+
+////////////////////////EXAMPLE SETTING 3//////////////////////////////////
+
+    # Specify the chunk size and number of characters per fractal
+    chunk_size = 13200
+    num_chars = 2300
+
+    # Calculate the number of iterations required
+    num_iterations = math.ceil(len(text) / chunk_size)
+
+    # Generate a unique identifier for the fractals
+    fractal_identifier = str(uuid.uuid4())
+
+    # Set up the dimensions of the fractal images
+    width = 1990
+    height = 1990

@@ -23,7 +23,7 @@ def generate_qr_with_info(coordinates, neighbors):
     # Save QR code as ASCII text
     ascii_qr = qr.get_matrix()
     text_filename = f"qr_{coordinates}.txt"
-    text_filepath = os.path.join('outputs/grid', text_filename)
+    text_filepath = os.path.join('outputs/grid1', text_filename)
     with open(text_filepath, "w") as file:
         for row in ascii_qr:
             file.write("".join(["##" if module else "  " for module in row]) + "\n")
@@ -63,23 +63,23 @@ def get_neighbors(i, j, size):
     return neighbors
 
 def save_grid_images(grid, size, qr_info):
-    os.makedirs('outputs/grid', exist_ok=True)
+    os.makedirs('outputs/grid1', exist_ok=True)
 
     for i, qr_img in enumerate(grid):
         qr_filename = f"qr_{i}.png"
-        qr_img.save(os.path.join('outputs/grid', qr_filename))
+        qr_img.save(os.path.join('outputs/grid1', qr_filename))
         qr_info[i]['image_filename'] = qr_filename
 
         text_filename = qr_info[i]['text_filename']
-        text_filepath = os.path.join('outputs/grid', text_filename)
-        os.replace(text_filepath, os.path.join('outputs/grid', text_filename))
+        text_filepath = os.path.join('outputs/grid1', text_filename)
+        os.replace(text_filepath, os.path.join('outputs/grid1', text_filename))
 
 def save_qr_info(qr_info):
-    with open(os.path.join('outputs/grid', "qr_info.json"), "w") as file:
+    with open(os.path.join('outputs/grid1', "qr_info.json"), "w") as file:
         json.dump(qr_info, file, indent=4)
 
 def generate_x3dom_page(qr_info, grid_size, output_file="index.html"):
-    with open(os.path.join('outputs/grid', output_file), 'w') as file:
+    with open(os.path.join('outputs/grid1', output_file), 'w') as file:
         file.write("""
 <!DOCTYPE html>
 <html>

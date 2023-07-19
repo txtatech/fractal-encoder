@@ -40,12 +40,12 @@ def get_neighbors(i, j, size):
     return neighbors
 
 def save_grid_images(qr_info, size):
-    os.makedirs('outputs/grid', exist_ok=True)
+    os.makedirs('outputs/grid2', exist_ok=True)
 
     for i, info in enumerate(qr_info):
         image = info['image']
         grid_filename = f"grid_{i}.png"
-        grid_filepath = os.path.join('outputs/grid', grid_filename)
+        grid_filepath = os.path.join('outputs/grid2', grid_filename)
         image.save(grid_filepath)
 
         qr_info[i]['image_filename'] = grid_filename
@@ -58,11 +58,11 @@ def save_qr_info(qr_info):
         # Update the 'image' key with the base64 string
         info['image'] = image_base64
 
-    with open(os.path.join('outputs/grid', "qr_info.json"), "w") as file:
+    with open(os.path.join('outputs/grid2', "qr_info.json"), "w") as file:
         json.dump(qr_info, file, indent=4)
 
 def generate_x3dom_page(qr_info, grid_size, output_file="index.html"):
-    with open(os.path.join('outputs/grid', output_file), 'w') as file:
+    with open(os.path.join('outputs/grid2', output_file), 'w') as file:
         file.write("""
 <!DOCTYPE html>
 <html>

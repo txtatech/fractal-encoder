@@ -42,5 +42,5 @@ for file in $files; do
   echo -e "\n\n\n\n$contents\n\n\n\n" >> "$output_directory/$output_file"
 done
 
-echo "Text files appended with padding in order to $output_directory/$output_file"
+echo "Text files from $input_directory appended to $output_directory/$output_file"
 

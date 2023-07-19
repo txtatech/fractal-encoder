@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Set the chunk size in characters
-chunk_size=1000
+# Set the chunk size in characters 1000 works for large qrs 250 for small
+chunk_size=250
 
 # Set the counter to 0
 counter=0

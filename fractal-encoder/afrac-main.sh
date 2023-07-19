@@ -1,21 +1,51 @@
 #!/bin/bash
 
-# Start afrac-main.py
-python3 afrac-main.py
+# Start
+python3 afrac-main-mode-8.py
 
-# Wait for afrac-main.py to finish
+# Wait
 wait
 
-# Start afrac-qr.py
+# Start
+cd outputs
+
+# Wait
+wait
+
+# Start
+bash afrac-export-meta-hash.sh
+
+# Wait
+wait
+
+# Start
+cd ..
+
+# Wait
+wait
+
+# Start
+echo Generating QR Codes and Grid!
+
+# Wait
+wait
+
+# Start
 python3 afrac-qr.py
 
-# Wait for afrac-qr.py to finish
+# Wait
 wait
 
-# Start afrac-grid.py
+# Start
 python3 afrac-grid.py
 
-# Wait for afrac-grid.py to finish
+# Wait
+wait
+
+# Start
+echo Done!
+
+# Wait
 wait
 
 

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Worker Console Demo</title>
+  <style>
+    pre {
+      white-space: pre;
+      font-family: monospace;
+    }
+    .log {
+      color: black;
+    }
+    .warn {
+      color: orange;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <script src="worker.js"></script>
+  <h1>Console Output</h1>
+  <div id="output"></div>
+
+  <script>
+    // Display the console output on the page
+    var output = document.getElementById('output');
+    var log = console.log;
+    console.log = function(message) {
+      log.apply(console, arguments);
+      output.innerHTML += '<pre class="log">' + message + '</pre>';
+    }
+
+    var warn = console.warn;
+    console.warn = function(message) {
+      warn.apply(console, arguments);
+      output.innerHTML += '<pre class="warn">' + message + '</pre>';
+    }
+
+    var error = console.error;
+    console.error = function(message) {
+      error.apply(console, arguments);
+      output.innerHTML += '<pre class="error">' + message + '</pre>';
+    }
+  </script>
+
+  <script>
+    // Example console.log, console.warn, console.error calls
+    console.log('Hello, console!');
+    console.warn('This is a warning');
+    console.error('This is an error');
+    console.dir({ key: 'value' });
+  </script>
+</body>
+</html>

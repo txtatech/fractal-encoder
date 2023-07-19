@@ -1,44 +1,89 @@
 #!/bin/bash
 
-# Start afrac-main.py
-python3 afrac-main.py
+# Start
+python3 afrac-main-mode-8.py
 
-# Wait for afrac-main.py to finish
+# Wait
 wait
 
-# Start afrac-qr.py
+# Start
+cd outputs
+
+# Wait
+wait
+
+# Start
+bash afrac-export-meta-hash.sh
+
+# Wait
+wait
+
+# Start
+cd ..
+
+# Wait
+wait
+
+# Start
 python3 afrac-qr.py
 
-# Wait for afrac-qr.py to finish
+# Wait
 wait
 
-# Start afrac-grid.py
+# Start
 python3 afrac-grid.py
 
-# Wait for afrac-grid.py to finish
+# Wait
 wait
 
 # Start
-/outputs/qr-png-ascii-convert.sh
+bash lazycopy.sh
+
+#Wait
+wait
+
+echo QR code ASCII art text generating...
 
 # Wait
 wait
 
 # Start
-/outputs/qr-png-text-embed-qr.sh
+python3 afrac-frac-grid.py
 
 # Wait
 wait
 
 # Start
-/outputs/ablob-no-pad.sh
+cd outputs
 
 # Wait
 wait
 
 # Start
-/outputs/ablob-padding.sh
+bash qr-png-ascii-convert.sh
 
 # Wait
 wait
 
+# Start
+bash qr-png-text-embed-qr.sh
+
+# Wait
+wait
+
+# Start
+bash ablob-no-pad.sh
+
+# Wait
+wait
+
+# Start
+bash ablob-padding.sh
+
+# Wait
+wait
+
+echo Fractal encoding has finished and all files have been generated!
+
+# Wait
+wait

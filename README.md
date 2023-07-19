@@ -26,6 +26,7 @@ To run this project, you'll need:
   - base64
   - file
   - qrencode
+  - exiftool
 
 ## Project Structure
 

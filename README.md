@@ -77,7 +77,7 @@ This project involves a number of transformations between different data represe
 Fixed metadta function.
 Added hashing function.
 Added metadata, hash checks and logging.
-Added png,bin,txt,js and processing tools to the outputs folder.
+Added png, bin, text, javascript and other processing tools to the outputs folder.
 
 # MIT License
 

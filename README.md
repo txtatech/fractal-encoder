@@ -72,6 +72,13 @@ Here's a step-by-step breakdown of the process:
 
 This project involves a number of transformations between different data representations, which might be computationally intensive and time-consuming. Consider the requirements of your machine before executing the scripts.
 
+# Version 0.0.03 Notes:
+
+Fixed metadta function.
+Added hashing function.
+Added metadata, hash checks and logging.
+Added png,bin,txt,js and processing tools to the outputs folder.
+
 # MIT License
 
 Copyright (c) 2023

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Start
-python3 afrac-main-mode-8.py
+python3 afrac-main-mode-9.py
 
 # Wait
 wait
@@ -13,13 +13,26 @@ cd outputs
 wait
 
 # Start
-bash afrac-export-meta-hash.sh
+bash afrac-export-meta-hash-V2.sh
+
+# Wait
+wait
+
+echo Working...
 
 # Wait
 wait
 
 # Start
 cd ..
+
+# Start
+python3 metahash-ledger.py
+
+# Wait
+wait
+
+echo Working...
 
 # Wait
 wait

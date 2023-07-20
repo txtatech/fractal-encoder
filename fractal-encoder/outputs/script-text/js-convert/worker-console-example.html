@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Web Worker Data</title>
+  <style>
+    pre.log {
+      color: black;
+    }
+    pre.warn {
+      color: orange;
+    }
+    pre.error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <script src="worker.js"></script>
+  <table>
+    <tr>
+      <td><input type="text" id="url-input" placeholder="Enter URL" value="http://127.0.0.1:8989"></td>
+      <td><button onclick="loadSSB()">Load SSB</button></td>
+      <td><button onclick="toggleFullscreen()">Toggle Fullscreen</button></td>
+      <td><button onclick="goBack()">Back</button></td>
+      <td><button onclick="goForward()">Forward</button></td>
+      <td><button onclick="stop()">Stop</button></td>
+      <td><button onclick="reload()">Reload</button></td>
+      <td><button onclick="inspectElement()">Inspect Element</button></td>
+    </tr>
+  </table>
+  <div id="ssb-container"></div>
+  <div id="ssb-url-display"></div>
+  <div id="ssb-close-container"></div>
+  <div>
+    <a href="http://127.0.0.1:8080">Zernt-8080/server</a>
+    <a href="http://127.0.0.1:8080/index.html">Zernt-8080/index</a>
+    <a href="http://127.0.0.1:8080/index1.html">Zernt-8080/index1</a>
+    <a href="http://127.0.0.1:7861">SD-7861</a>
+    <a href="http://127.0.0.1:7860">SD-7860</a>
+    <a href="http://127.0.0.1:8989">SD-8989</a>
+    <a href="https://google.com">Google</a>
+    <a href="https://bard.google.com">Bard</a>
+    <a href="https://chat.openai.com/?model=text-davinci-002-render-sha">ChatGPT</a>
+  </div>
+  <h6>+ Prompt:</h6>
+  <textarea rows="10" cols="141" style="font-size: 1.0em;"></textarea>
+  <h6>- Prompt:</h6>
+  <textarea rows="10" cols="141" style="font-size: 1.0em;"></textarea>
+  <h6>Scratchpad:</h6>
+  <textarea rows="10" cols="141" style="font-size: 1.0em;"></textarea>
+  <h6>Console Output:</h6>
+  <div id="output"></div>
+  <h6>Add More Here:</h6>
+
+  <div id="worker2-data"></div>
+  <div id="worker3-data"></div>
+
+  <script>
+    // Event listener to receive messages from web workers
+    function handleMessage(event) {
+      const data = event.data;
+
+      // Display the message in the respective worker's data div
+      const workerDataDiv = document.getElementById(data.worker + '-data');
+      workerDataDiv.innerHTML += `<p>Message: ${data.message}</p>`;
+      workerDataDiv.innerHTML += `<p>URL: ${data.url}</p>`;
+      workerDataDiv.innerHTML += `<p>Protocol: ${data.protocol}</p>`;
+      workerDataDiv.innerHTML += `<p>Host: ${data.host}</p>`;
+      workerDataDiv.innerHTML += `<p>Port: ${data.port}</p>`;
+      workerDataDiv.innerHTML += `<p>Pathname: ${data.pathname}</p>`;
+      workerDataDiv.innerHTML += `<hr>`;
+    }
+
+    // Override console functions to intercept messages
+    let log1 = console.log;
+    console.log = function () {
+      let message = Array.from(arguments)
+        .map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg)
+        .join(' ');
+      log1.apply(console, arguments);
+      displayWorkerOutput('worker2', message);
+    };
+
+    let warn2 = console.warn;
+    console.warn = function () {
+      let message = Array.from(arguments)
+        .map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg)
+        .join(' ');
+      warn2.apply(console, arguments);
+      displayWorkerOutput('worker2', message);
+    };
+
+    let error2 = console.error;
+    console.error = function () {
+      let message = Array.from(arguments)
+        .map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg)
+        .join(' ');
+      error2.apply(console, arguments);
+      displayWorkerOutput('worker2', message);
+    };
+
+    // Display worker output in the respective worker's data div
+    function displayWorkerOutput(worker, message) {
+      const workerDataDiv = document.getElementById(worker + '-data');
+      workerDataDiv.innerHTML += `<p>${message}</p>`;
+      workerDataDiv.innerHTML += `<hr>`;
+    }
+
+    // Create worker 2
+    const workerCode22 = `
+      self.onmessage = function(event) {
+        // Process messages received from the main thread
+        if (event.data.type === 'data') {
+          const data = {
+            worker: 'worker2',
+            message: event.data.message,
+            url: event.data.url,
+            protocol: event.data.protocol,
+            host: event.data.host,
+            port: event.data.port,
+            pathname: event.data.pathname
+          };
+          self.postMessage(data); // Send data back to the main thread
+        }
+      };
+    `;
+
+    const workerBlob22 = new Blob([workerCode22], { type: 'application/javascript' });
+    const workerScriptURL22 = URL.createObjectURL(workerBlob22);
+    const worker2 = new Worker(workerScriptURL22);
+    worker2.addEventListener('message', handleMessage);
+
+    // Create worker 3
+    const workerCode33 = `
+      self.onmessage = function(event) {
+        // Process messages received from the main thread
+        if (event.data.type === 'data') {
+          const data = {
+            worker: 'worker3',
+            message: event.data.message,
+            url: event.data.url,
+            protocol: event.data.protocol,
+            host: event.data.host,
+            port: event.data.port,
+            pathname: event.data.pathname
+          };
+          self.postMessage(data); // Send data back to the main thread
+        }
+      };
+    `;
+
+    const workerBlob33 = new Blob([workerCode33], { type: 'application/javascript' });
+    const workerScriptURL33 = URL.createObjectURL(workerBlob33);
+    const worker3 = new Worker(workerScriptURL33);
+    worker3.addEventListener('message', handleMessage);
+
+    // Send messages to workers
+    const data = {
+      type: 'data',
+      message: 'Hello from the main thread',
+      url: window.location.href,
+      protocol: window.location.protocol,
+      host: window.location.host,
+      port: window.location.port,
+      pathname: window.location.pathname
+    };
+
+    worker2.postMessage(data);
+    worker3.postMessage(data);
+  </script>
+<script>
+self.onmessage = (event) => {
+  console.log("[Shard 2] Received message from main thread: ", event.data.message);
+  console.log("[Shard 2] URL of the current page: ", event.data.url);
+  console.log("[Shard 2] Protocol: ", event.data.protocol);
+  console.log("[Shard 2] Host: ", event.data.host);
+  console.log("[Shard 2] Port: ", event.data.port);
+  console.log("[Shard 2] Pathname: ", event.data.pathname);
+  console.log("[Shard 2] Blob URLs: ", event.data.blobUrls);
+  console.log("[Shard 2] Binary String URLs: ", event.data.binaryStringUrls);
+  console.log("[Shard 2] Memory info: ", event.data.memoryInfo);
+  self.postMessage({ message: 'Hello from worker 2' });
+};
+
+self.addEventListener('message', (event) => {
+  if (event.data.type === 'console') {
+    const { method, args } = event.data;
+    console[method].apply(console, args);
+  }
+});
+
+</script>
+</body>
+</html>
+

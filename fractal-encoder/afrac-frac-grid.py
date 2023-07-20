@@ -15,7 +15,7 @@ def generate_grid(size):
         image_filepath = os.path.join(qr_codes_directory, filename)
         image = Image.open(image_filepath)
 
-        # Resize the image to the desired size
+        # Resize the image to the desired 100x100 128x128 256x256 512x512
         image = image.resize((128, 128))
 
         qr_info.append({
@@ -125,3 +125,5 @@ if __name__ == "__main__":
     save_grid_images(qr_info, grid_size)
     save_qr_info(qr_info)
     generate_x3dom_page(qr_info, grid_size)
+
+    print("Grid(s) created! Working...")

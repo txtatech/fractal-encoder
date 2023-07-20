@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Show the options for the output folder
-echo "Choose an output folder:"
+# Show the options for the input folder
+echo "Choose an input folder for blob1.txt without padding and ASCII QR codes:"
 echo "1. converted1"
 echo "2. converted2"
 
@@ -43,4 +43,3 @@ for file in $files; do
 done
 
 echo "Text files from $input_directory appended to $output_directory/$output_file"
-

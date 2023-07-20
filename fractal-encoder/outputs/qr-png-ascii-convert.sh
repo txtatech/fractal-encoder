@@ -54,5 +54,4 @@ for file in crawl/*.png; do
   fi
 done
 
-echo "QR code ASCII art generated successfully for all PNG files in the 'crawl' folder."
-
+echo "QR code ASCII art generated to outputs/converted1 for all PNG files in the outputs/crawl folder."
